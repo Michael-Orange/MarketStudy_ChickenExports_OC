@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.collections as LineCollection
 import numpy as np
+import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram
+
 
 
 def display_circles(pcs, n_comp, pca, axis_ranks, labels=None, label_rotation=0, lims=None):
@@ -133,3 +135,52 @@ def display_factorial_planes(X_projected, n_comp, pca, axis_ranks, labels=None, 
 
                 ax1.set_title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
                 ax2.set_title("- Zoom - Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
+
+
+def display_factorial_planes\
+                (X_projected, n_comp, pca, axis_ranks, labels=None, alpha=1, illustrative_var=None, lims=None):
+    for d1, d2 in axis_ranks:
+        if d2 < n_comp:
+
+            fig = plt.figure(figsize=(15, 14))
+
+            # display points
+            if illustrative_var is None:
+                plt.scatter(X_projected[:, d1], X_projected[:, d2], alpha=alpha)
+            else:
+                illustrative_var = np.array(illustrative_var)
+                for value in np.unique(illustrative_var):
+                    selected = np.where(illustrative_var == value)
+                    plt.plot(X_projected[selected, d1], X_projected[selected, d2], alpha=alpha, label=value, s=10)
+                plt.legend()
+
+            # affichage des labels des points
+            if labels is not None:
+                for i, (x, y) in enumerate(X_projected[:, [d1, d2]]):
+                    plt.text(x, y + 0.05, labels[i], fontsize='8', ha='center', va='bottom')
+
+            # détermination des limites du graphique
+            boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
+            plt.xlim([-boundary, boundary])
+            plt.ylim([-boundary, boundary])
+
+            if lims is None:
+                boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
+                plt.xlim([-boundary, boundary])
+                plt.ylim([-boundary, boundary])
+            else:
+                xmin, xmax, ymin, ymax = lims
+                plt.xlim(xmin, xmax)
+                plt.ylim(ymin, ymax)
+
+            # affichage des lignes horizontales et verticales
+            plt.plot([-100, 100], [0, 0], color='grey', ls='--')
+            plt.plot([0, 0], [-100, 100], color='grey', ls='--')
+
+            # nom des axes, avec le pourcentage d'inertie expliqué
+            plt.xlabel('F{} ({}%)'.format(d1 + 1, round(100 * pca.explained_variance_ratio_[d1], 1)))
+            plt.ylabel('F{} ({}%)'.format(d2 + 1, round(100 * pca.explained_variance_ratio_[d2], 1)))
+
+            plt.title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
+
+            plt.show(block=False)
