@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
+import matplotlib.collections as LineCollection
 import numpy as np
 from scipy.cluster.hierarchy import dendrogram
 
