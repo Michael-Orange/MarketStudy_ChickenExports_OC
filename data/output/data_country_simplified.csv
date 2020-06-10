@@ -1,4 +1,4 @@
-country,food_supply_kcalcapitaday,pop_growth,protein_supply_gcapitaday,prevalence_protein_animal,pop_thousand,euro_union
+country,food_supply_kcalcapitaday,pop_growth,protein_supply_gcapitaday,protein_animal_over_protein,pop_thousand,euro_union
 Armenia,90.06000000000003,1.629044570863769,97.33000000000006,45.7823898078701,2944.7909999999997,Outside EU
 Afghanistan,58.26000000000002,12.477766605580243,54.09,19.523017193566282,36296.113,Outside EU
 Albania,111.37000000000002,-0.6757031328022856,119.50000000000006,55.49790794979077,2884.1690000000003,Outside EU
