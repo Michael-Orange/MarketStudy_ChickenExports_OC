@@ -10,7 +10,10 @@ def display_corr_matrix(corr):
     mask = np.triu(np.ones_like(corr, dtype=np.bool))
 
     # Set up the matplotlib figure
-    fig, ax = plt.subplots(figsize=(8, 6))
+    if len(corr) < 8:
+        fig, ax = plt.subplots(figsize=(8, 6))
+    else:
+        fig, ax = plt.subplots(figsize=(12, 10))
     # Generate a custom diverging colormap
     cmap = sns.color_palette("GnBu_d")
     # Draw the heatmap with the mask and correct aspect ratio
@@ -156,8 +159,10 @@ def display_factorial_planes(X_projected, n_comp, pca, axis_ranks, labels=None, 
                 ax2.set_title("- Zoom - Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
 
 
-def display_factorial_planes \
-                (X_projected, n_comp, pca, axis_ranks, labels=None, alpha=1, illustrative_var=None, lims=None):
+def display_factorial_planes(X_projected, n_comp,
+                             pca, axis_ranks, labels=None, alpha=1, illustrative_var=None, lims=None):
+
+
     for d1, d2 in axis_ranks:
         if d2 < n_comp:
 
@@ -166,11 +171,23 @@ def display_factorial_planes \
             x_axis = X_projected[:, d1]
             y_axis = X_projected[:, d2]
 
+            # graph limits
+            if lims is None:
+                boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
+                xmin, ymin = -boundary, -boundary
+                xmax, ymax = boundary, boundary
+                plt.xlim([xmin, xmax])
+                plt.ylim([ymin, ymax])
+            else:
+                xmin, xmax, ymin, ymax = lims
+                plt.xlim(xmin, xmax)
+                plt.ylim(ymin, ymax)
+
             # display points
             if illustrative_var is None:
                 sns.scatterplot(x_axis, y_axis, alpha=alpha)
             else:
-                sns.scatterplot(x_axis, y_axis, hue=illustrative_var, alpha=alpha, palette='Set1')
+                sns.scatterplot(x_axis, y_axis, hue=illustrative_var, alpha=alpha, palette = 'Set3')
 
                 # display centroid only if there is no labels to display
                 if labels is None:
@@ -189,21 +206,8 @@ def display_factorial_planes \
             # display labels of the points
             if labels is not None:
                 for i, (x, y) in enumerate(X_projected[:, [d1, d2]]):
-                    plt.text(x, y + 0.05, labels[i], fontsize='8', ha='center', va='bottom')
-
-            # graph limits
-            boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
-            plt.xlim([-boundary, boundary])
-            plt.ylim([-boundary, boundary])
-
-            if lims is None:
-                boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
-                plt.xlim([-boundary, boundary])
-                plt.ylim([-boundary, boundary])
-            else:
-                xmin, xmax, ymin, ymax = lims
-                plt.xlim(xmin, xmax)
-                plt.ylim(ymin, ymax)
+                    if x >= xmin and x <= xmax and y >= ymin and y <= ymax:
+                        plt.text(x, y + 0.05, labels[i], fontsize='8', ha='center', va='bottom')
 
             # display middle lines
             plt.plot([-100, 100], [0, 0], color='grey', ls='--')
@@ -217,3 +221,35 @@ def display_factorial_planes \
             plt.title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
 
             plt.show(block=False)
+
+
+def display_multiple_boxplot(X, shape_given):
+    # X dataset with the n variables for the boxplots
+    # shape of the subplot
+
+    medianprops = {'color': "black"}
+    meanprops = {'marker': 'o', 'markeredgecolor': 'black', 'markerfacecolor': 'firebrick'}
+
+    for row, col in shape_given:
+        fig, ax = plt.subplots(row, col, figsize = ((3.5*col),(4*row)))
+        i, j = 0, 0
+
+        for k in X.columns:
+            if row > 1 and col > 1:
+                if j < row:
+                    ax[j][i].boxplot(x=X[k], showmeans=True, meanprops=meanprops, medianprops=medianprops)
+                    ax[j][i].set_title('{}'.format(k))
+                    ax[j][i].set_facecolor('whitesmoke')
+                    ax[j][i].grid(True, c='white')
+
+                    i += 1
+                    if i == col:
+                        (i, j) = (0, j+1)
+
+            else:
+                if i < max(row, col):
+                    ax[i].boxplot(x=X[k], showmeans=True, meanprops=meanprops, medianprops=medianprops)
+                    ax[i].set_title('{}'.format(k))
+                    ax[i].set_facecolor('whitesmoke')
+                    ax[i].grid(True, c='white')
+                    i += 1
