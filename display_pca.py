@@ -11,19 +11,20 @@ def display_corr_matrix(corr):
 
     # Set up the matplotlib figure
     if len(corr) < 8:
-        fig, ax = plt.subplots(figsize=(8, 6))
+        corr_matrix, ax = plt.subplots(figsize=(8, 6))
     else:
-        fig, ax = plt.subplots(figsize=(12, 10))
+        corr_matrix, ax = plt.subplots(figsize=(12, 10))
     # Generate a custom diverging colormap
     cmap = sns.color_palette("GnBu_d")
     # Draw the heatmap with the mask and correct aspect ratio
     sns.heatmap(corr, annot=True, vmin=-1, vmax=1, mask=mask,
                 cmap=cmap, square=True, center=0, linewidths=.5, cbar_kws={"shrink": .7})
     # Rotate x labels
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, horizontalalignment='right')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=22.5, horizontalalignment='right')
 
     plt.title('Correlation Matrix', weight='bold')
     plt.show()
+    return corr_matrix
 
 
 def display_circles(pcs, n_comp, pca, axis_ranks, labels=None, label_rotation=0, lims=None):
@@ -77,6 +78,7 @@ def display_circles(pcs, n_comp, pca, axis_ranks, labels=None, label_rotation=0,
             plt.ylabel('F{} ({}%)'.format(d2 + 1, round(100 * pca.explained_variance_ratio_[d2], 1)))
 
             plt.show(block=False)
+            return fig
 
 
 def display_scree_plot(pca):
@@ -87,6 +89,7 @@ def display_scree_plot(pca):
     bs = np.cumsum(bs)
     bs = bs[::-1]
 
+    fig = plt.figure()
     plt.bar(np.arange(n_comp)+1, scree)
     plt.plot(np.arange(n_comp)+1, scree.cumsum(),c="black",marker='o')
     plt.xlabel("Factor Number")
@@ -94,6 +97,8 @@ def display_scree_plot(pca):
     plt.title("Scree plot - Explained variance vs # of factors")
     plt.xticks(np.arange(n_comp)+1)
     plt.show()
+    return fig
+
 
 def display_broken_sticks_plot(pca, n):
     n_comp = len(pca.explained_variance_)
@@ -104,6 +109,7 @@ def display_broken_sticks_plot(pca, n):
 
     eigval = (n - 1) / n * pca.explained_variance_
 
+    fig = plt.figure()
     plt.bar(np.arange(n_comp) + 1, eigval)
     plt.plot(np.arange(n_comp) + 1, bs, c='red', marker='o', label='treshold')
 
@@ -113,17 +119,24 @@ def display_broken_sticks_plot(pca, n):
     plt.title("Broken Stick Model")
     plt.legend()
     plt.show()
+    return fig
 
-def plot_dendrogram(Z, names):
-    plt.figure(figsize=(10,25))
+def plot_dendrogram(Z, names, orientation='left'):
+
+    if orientation in ['left', 'right']:
+        fig = plt.figure(figsize=(10,25))
+    else:
+        fig = plt.figure(figsize=(25,10))
+
     plt.title('Hierarchical Clustering Dendrogram')
     plt.xlabel('distance')
     dendrogram(
         Z,
         labels = names,
-        orientation = "left",
+        orientation = orientation,
     )
     plt.show()
+    return fig
 
 
 def display_factorial_planes(X_projected, n_comp, pca, axis_ranks, labels=None, alpha=1, illustrative_var=None,
@@ -167,7 +180,8 @@ def display_factorial_planes(X_projected, n_comp,
         if d2 < n_comp:
 
             sns.set_style("darkgrid")
-            plt.figure(figsize=(12, 12))
+
+            fig = plt.figure(figsize=(12, 12))
             x_axis = X_projected[:, d1]
             y_axis = X_projected[:, d2]
 
@@ -189,7 +203,7 @@ def display_factorial_planes(X_projected, n_comp,
             else:
                 sns.scatterplot(x_axis, y_axis, hue=illustrative_var, alpha=alpha, palette = 'Set3')
 
-                # display centroid only if there is no labels to display
+            # display centroid only if there is no labels to display
                 if labels is None:
                     centroids_all = []
                     for cluster_name in sorted(illustrative_var.unique()):
@@ -221,6 +235,7 @@ def display_factorial_planes(X_projected, n_comp,
             plt.title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
 
             plt.show(block=False)
+            return fig
 
 
 def display_multiple_boxplot(X, shape_given):
@@ -253,3 +268,4 @@ def display_multiple_boxplot(X, shape_given):
                     ax[i].set_facecolor('whitesmoke')
                     ax[i].grid(True, c='white')
                     i += 1
+        return fig
