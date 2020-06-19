@@ -13100,14 +13100,15 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A company in the food industry specialized in chicken is looking at expanding worldwide. All countries are considered. 
-<br>The main objective is to provide the company with data ensuring it will collaborate with the most promising export market countries.</p>
+<p>A company in the food industry specialized in Chicken Meat is looking at expanding worldwide. All countries are considered.</p>
+<p>Production is located in France.
+<br>The mission is to provide the company with data ensuring it will collaborate with the most promising export market countries.</p>
 <p>Grouping countries in 'clusters' based on their similarity is required. 
 <br>Default variables are:</p>
 <ul>
-<li>country population, </li>
 <li>population growth, </li>
-<li>calory supply per capita and protein supply per capita, </li>
+<li>calory supply per capita </li>
+<li>protein supply per capita, </li>
 <li>prevalence of animal proteins in the mix. </li>
 </ul>
 <p>Additional relevant variable might be included (ex. GDP per capita)</p>
@@ -13126,16 +13127,17 @@ div#notebook {
 <li><a href="#pop">Population</a></li>
 <li><a href="#gdp">Gross Domestic Product</a></li>
 <li><a href="#stab">Political Stability</a></li>
+<li><a href="#eu">European Union countries</a></li>
 </ul>
 <p><strong>Section 3</strong> <a href="#food">Adding Food-related data</a></p>
 <ul>
 <li><a href="#fb">Food-Balance</a></li>
 <li><a href="#diet">Diet - Calories and Proteins</a></li>
 <li><a href="#poultry">Poulty key data</a></li>
-<li><a href="#chicken">Chicken importations</a></li>
 </ul>
 <p><strong>Section 4</strong> <a href="#imputation">Imputating missing data</a></p>
-<p><strong>Section 5</strong> <a href="#export">Exporting Data Country</a></p>
+<p><strong>Section 5</strong> <a href="#prep">Preparation data set</a></p>
+<p><strong>Section 6</strong> <a href="#export">Exporting Data set</a></p>
 
 </div>
 </div>
@@ -13155,6 +13157,10 @@ div#notebook {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">from</span> <span class="nn">display_pca</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 
     </div>
@@ -13181,7 +13187,6 @@ div#notebook {
 <li>Dataset Population</li>
 <li>Dataset Gross Domestic Product (GDP)</li>
 <li>Dataset Political Stability Index</li>
-<li>Dataset Trade Mix - Chicken </li>
 </ul>
 
 </div>
@@ -13207,16 +13212,31 @@ div#notebook {
 
 <span class="c1"># import GDP and Stability</span>
 <span class="n">gdp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/raw/FAOSTAT_data_MacroIndicators_20132017.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># import Stability Index</span>
 <span class="n">stability</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/raw/FAOSTAT_data_PoliticalStability_2017.csv&quot;</span><span class="p">)</span>
 
-<span class="c1"># import chicken trade</span>
-<span class="n">chicken_trade</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/raw/FAOSTAT_data_Trade_Chicken_20132017.csv&quot;</span><span class="p">)</span>
+<span class="c1"># import EU countries</span>
+<span class="n">eu_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/raw/listofeucountries.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Important note</strong> 
+Naming convention: analysis is based on 2017 data, the default year is 2017 for the variables.</p>
+<ul>
+<li>For the variables related to 2017, indication of the 'year' is not included. ex. 'pop_thousand' =population 2017.</li>
+<li>For the variables related to 2013, '2013' is always included - ex. 'pop_thousand_2013' =population 2013.</li>
+</ul>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13241,18 +13261,6 @@ div#notebook {
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Variables added to the dataset:</p>
-<ul>
-<li>Population per country</li>
-<li>Growth of the population (%) - 2017 vs 2013</li>
-</ul>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
@@ -13266,25 +13274,11 @@ div#notebook {
 <span class="n">pop</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;population_total_thousand&#39;</span><span class="p">])</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pop_2013_thousand&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_2017_thousand&#39;</span><span class="p">]</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pop_thousand_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_thousand&#39;</span><span class="p">]</span>
 <span class="n">data_country</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1">#growth population</span>
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_growth_percent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_2017_thousand&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_2013_thousand&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span><span class="mi">100</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;pop_2013_thousand&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_growth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_thousand&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_thousand_2013&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span><span class="mi">100</span>
 </pre></div>
 
     </div>
@@ -13300,26 +13294,15 @@ div#notebook {
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<ul>
-<li>GDP per capita (USD)</li>
-<li>GDP Growth - 2017 vs 2013</li>
-</ul>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">gdp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xx&quot;</span><span class="p">,</span> <span class="s2">&quot;xx2&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s1">&#39;xx3&#39;</span><span class="p">,</span> <span class="s1">&#39;xx4&#39;</span><span class="p">,</span> <span class="s1">&#39;xx5&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;xx6&#39;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;xx7&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s1">&#39;xx8&#39;</span><span class="p">,</span> <span class="s1">&#39;xx9&#39;</span><span class="p">,</span> <span class="s1">&#39;xx10&#39;</span><span class="p">]</span>
-<span class="n">gdp</span> <span class="o">=</span> <span class="n">gdp</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">gdp</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Gross Domestic Product per capita&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gdp</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">2017</span><span class="p">)]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>\
-                                                                                                      <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-<span class="n">gdp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdp_percapita_usd_2017&#39;</span><span class="p">]</span>
+<span class="n">gdp</span> <span class="o">=</span> <span class="n">gdp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gdp</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Gross Domestic Product per capita&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>\
+                                                                                                      <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+<span class="n">gdp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdp_percapita_usd_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_percapita_usd&#39;</span><span class="p">]</span>
 <span class="n">gdp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_country</span><span class="p">,</span> <span class="n">gdp</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -13336,7 +13319,9 @@ div#notebook {
 <p>GDP of Taiwan is missing. 
 Imputation with information collected from the International Monetary Fund (IMF).</p>
 <ul>
-<li>Taiwan GDP per capita 2017 : 50 593 USD - Source: <a href="https://bit.ly/2U2251b">https://bit.ly/2U2251b</a></li>
+<li>Taiwan GDP per capita 2013 : 43 831 USD </li>
+<li>Taiwan GDP per capita 2017 : 50 593 USD 
+Source: <a href="https://bit.ly/2U2251b">https://bit.ly/2U2251b</a></li>
 </ul>
 
 </div>
@@ -13344,10 +13329,40 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Imputation GDP Taiwan</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;China, Taiwan Province of&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_percapita_usd_2013&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">43831</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;China, Taiwan Province of&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_percapita_usd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50593</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;China, Taiwan Province of&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_percapita_usd_2017&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50593</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Growth GDP</span>
+<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;gdp_growth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;gdp_percapita_usd&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;gdp_percapita_usd_2013&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;gdp_percapita_usd_2013&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13365,7 +13380,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">stability</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xx&quot;</span><span class="p">,</span> <span class="s2">&quot;xx2&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s1">&#39;xx3&#39;</span><span class="p">,</span> <span class="s1">&#39;xx4&#39;</span><span class="p">,</span> <span class="s1">&#39;xx5&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;xx6&#39;</span><span class="p">,</span> <span class="s2">&quot;xx8&quot;</span><span class="p">,</span> <span class="s2">&quot;xx8&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s1">&#39;xx9&#39;</span><span class="p">,</span> <span class="s1">&#39;xx10&#39;</span><span class="p">,</span> <span class="s1">&#39;xx11&#39;</span><span class="p">]</span>
@@ -13374,6 +13389,114 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <span class="n">stability</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_country</span><span class="p">,</span> <span class="n">stability</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h3>European Union countries</h3><a id='eu'></a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#countries with different spellings between eu_country and data_country</span>
+<span class="n">eu_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">])]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>x</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>5</th>
+      <td>Czech Republic</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>Slovak Republic</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>United Kingdom</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># correct names</span>
+<span class="n">eu_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Czech Republic&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Czechia&#39;</span>
+<span class="n">eu_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Slovak Republic&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Slovakia&#39;</span>
+<span class="n">eu_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;United Kingdom&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;United Kingdom of Great Britain and Northern Ireland&#39;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># flag EU countries</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]),</span> <span class="s1">&#39;euro_union&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;EU&#39;</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">eu_country</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]),</span> <span class="s1">&#39;euro_union&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Outside EU&#39;</span>
 </pre></div>
 
     </div>
@@ -13406,7 +13529,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># group food datatsets</span>
@@ -13419,8 +13542,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xx&quot;</span><span class="p">,</span> <span class="s2">&quot;xx2&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s1">&#39;xx3&#39;</span><span class="p">,</span> <span class="s1">&#39;element&#39;</span><span class="p">,</span> <span class="s1">&#39;item_code&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;xx4&#39;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s1">&#39;xx5&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_description&#39;</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="s1">&#39;xx6&#39;</span><span class="p">]</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;item_code&quot;</span><span class="p">,</span> \
-                               <span class="s2">&quot;item&quot;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;element&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;item_code&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;element&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
 
 <span class="c1"># rename columns</span>
 <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;domestic_supply_quantity&#39;</span><span class="p">,</span><span class="s1">&#39;export_quantity&#39;</span><span class="p">,</span><span class="s1">&#39;fat_supply_quantity_gcapitaday&#39;</span><span class="p">,</span><span class="s1">&#39;feed&#39;</span><span class="p">,</span>
@@ -13454,7 +13576,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># remove doublon from China (code_country 351)</span>
@@ -13470,347 +13592,6 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[10]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>year</th>
-      <th>country_code</th>
-      <th>country</th>
-      <th>origin</th>
-      <th>item_code</th>
-      <th>item</th>
-      <th>domestic_supply_quantity</th>
-      <th>export_quantity</th>
-      <th>fat_supply_quantity_gcapitaday</th>
-      <th>feed</th>
-      <th>...</th>
-      <th>losses</th>
-      <th>other_uses</th>
-      <th>processing</th>
-      <th>production</th>
-      <th>protein_supply_quantity_gcapitaday</th>
-      <th>residuals</th>
-      <th>seed</th>
-      <th>stock_variation</th>
-      <th>tourist_consumption</th>
-      <th>population_total_thousand</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>2013</td>
-      <td>1</td>
-      <td>Armenia</td>
-      <td>animal</td>
-      <td>2731</td>
-      <td>Bovine Meat</td>
-      <td>61.0</td>
-      <td>0.0</td>
-      <td>8.88</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>2.0</td>
-      <td>NaN</td>
-      <td>54.0</td>
-      <td>7.97</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>2897.588</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2013</td>
-      <td>1</td>
-      <td>Armenia</td>
-      <td>animal</td>
-      <td>2732</td>
-      <td>Mutton &amp; Goat Meat</td>
-      <td>9.0</td>
-      <td>NaN</td>
-      <td>1.89</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>9.0</td>
-      <td>1.12</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2897.588</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2013</td>
-      <td>1</td>
-      <td>Armenia</td>
-      <td>animal</td>
-      <td>2733</td>
-      <td>Pigmeat</td>
-      <td>31.0</td>
-      <td>1.0</td>
-      <td>6.72</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>2.0</td>
-      <td>NaN</td>
-      <td>13.0</td>
-      <td>2.53</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>2897.588</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2013</td>
-      <td>1</td>
-      <td>Armenia</td>
-      <td>animal</td>
-      <td>2734</td>
-      <td>Poultry Meat</td>
-      <td>40.0</td>
-      <td>0.0</td>
-      <td>2.82</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>8.0</td>
-      <td>4.51</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2897.588</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>2013</td>
-      <td>1</td>
-      <td>Armenia</td>
-      <td>animal</td>
-      <td>2735</td>
-      <td>Meat, Other</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.00</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.00</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2897.588</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>31744</th>
-      <td>2017</td>
-      <td>276</td>
-      <td>Sudan</td>
-      <td>vegetal</td>
-      <td>2659</td>
-      <td>Alcohol, Non-Food</td>
-      <td>0.0</td>
-      <td>25.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>25.0</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>40813.397</td>
-    </tr>
-    <tr>
-      <th>31745</th>
-      <td>2017</td>
-      <td>276</td>
-      <td>Sudan</td>
-      <td>vegetal</td>
-      <td>2680</td>
-      <td>Infant food</td>
-      <td>1.0</td>
-      <td>NaN</td>
-      <td>0.00</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.01</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>40813.397</td>
-    </tr>
-    <tr>
-      <th>31746</th>
-      <td>2017</td>
-      <td>276</td>
-      <td>Sudan</td>
-      <td>vegetal</td>
-      <td>2745</td>
-      <td>Honey</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.00</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1.0</td>
-      <td>0.00</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>40813.397</td>
-    </tr>
-    <tr>
-      <th>31747</th>
-      <td>2017</td>
-      <td>276</td>
-      <td>Sudan</td>
-      <td>vegetal</td>
-      <td>2805</td>
-      <td>Rice and products</td>
-      <td>130.0</td>
-      <td>NaN</td>
-      <td>0.06</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>1.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>27.0</td>
-      <td>0.41</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>13.0</td>
-      <td>0.0</td>
-      <td>40813.397</td>
-    </tr>
-    <tr>
-      <th>31748</th>
-      <td>2017</td>
-      <td>276</td>
-      <td>Sudan</td>
-      <td>vegetal</td>
-      <td>2899</td>
-      <td>Miscellaneous</td>
-      <td>30.0</td>
-      <td>0.0</td>
-      <td>0.01</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.02</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>40813.397</td>
-    </tr>
-  </tbody>
-</table>
-<p>31455 rows × 24 columns</p>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13819,26 +13600,16 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<ul>
-<li>Food supply kcal per capita per day - per country</li>
-<li>Protein supply g per capita per day - per country</li>
-<li>Growth of the protein supply per capita per country (%) - 2017 vs 2013</li>
-</ul>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">2017</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> \
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span>
                         <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;food_supply_kcalcapitaday&#39;</span><span class="p">,</span>  <span class="s1">&#39;protein_supply_quantity_gcapitaday&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
-<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;food_supply_kcalcapitaday_2017&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_gcapitaday_2017&#39;</span><span class="p">]</span>
+
+<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;food_supply_kcalcapitaday_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;food_supply_kcalcapitaday&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;protein_supply_gcapitaday_2013&#39;</span><span class="p">,</span>  <span class="s1">&#39;protein_supply_gcapitaday&#39;</span><span class="p">]</span>
 <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">data_country</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -13853,24 +13624,16 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Animal proteins in the total protein supply</strong></p>
-<ul>
-<li>Protein supply kg from animals - per country</li>
-<li>Growth of the protein supply per country (%) from animals - 2017 vs 2013</li>
-</ul>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">NB_DAYS_YEAR</span> <span class="o">=</span> <span class="mi">365</span> 
-
-<span class="c1">#total protein supply</span>
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_kg_2017&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_gcapitaday_2017&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">NB_DAYS_YEAR</span> <span class="o">*</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_2017_thousand&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
 </pre></div>
 
     </div>
@@ -13880,13 +13643,29 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># protein supply from animals</span>
-<span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;origin&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;animal&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">2017</span><span class="p">)]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> \
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Protein Supply in kg</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;protein_supply_gcapitaday&#39;</span><span class="p">,</span><span class="s1">&#39;pop_thousand&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_kg&#39;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s1">&#39;protein_supply_gcapitaday_2013&#39;</span><span class="p">,</span><span class="s1">&#39;pop_thousand_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_kg_2013&#39;</span><span class="p">)</span> <span class="p">]:</span>
+    
+    <span class="n">data_country</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">NB_DAYS_YEAR</span> <span class="o">*</span>  <span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;origin&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;animal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span>
                                                       <span class="n">values</span><span class="o">=</span><span class="p">[</span> <span class="s1">&#39;protein_supply_quantity_gcapitaday&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
-<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;protein_supply_animal_gcapitaday_2017&#39;</span><span class="p">]</span>
+<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;protein_supply_animal_gcapitaday_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_animal_gcapitaday&#39;</span><span class="p">]</span>
 <span class="n">temp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_country</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -13899,15 +13678,14 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># prevalence animal proteins in the total protein supply</span>
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_animal_kg_2017&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_animal_gcapitaday_2017&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">NB_DAYS_YEAR</span> <span class="o">*</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;pop_2017_thousand&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
-
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;prevalence_protein_animal_percent_2017&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_animal_kg_2017&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;protein_supply_kg_2017&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Protein Supply from animals in kg </span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;protein_supply_animal_gcapitaday&#39;</span><span class="p">,</span><span class="s1">&#39;pop_thousand&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_animal_kg&#39;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s1">&#39;protein_supply_animal_gcapitaday_2013&#39;</span><span class="p">,</span><span class="s1">&#39;pop_thousand_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_animal_kg_2013&#39;</span><span class="p">)</span> <span class="p">]:</span>
+    
+    <span class="n">data_country</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">NB_DAYS_YEAR</span> <span class="o">*</span>  <span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
 </pre></div>
 
     </div>
@@ -13917,12 +13695,35 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Proportion animal proteins in the total protein supply</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;protein_supply_animal_kg&#39;</span><span class="p">,</span><span class="s1">&#39;protein_supply_kg&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_animal_over_protein&#39;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s1">&#39;protein_supply_animal_kg_2013&#39;</span><span class="p">,</span><span class="s1">&#39;protein_supply_kg_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_animal_over_protein_2013&#39;</span><span class="p">),</span> 
+                <span class="p">]:</span>
+    
+    <span class="n">data_country</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;protein_supply_animal_kg_2017&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_kg_2017&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_animal_gcapitaday_2017&#39;</span><span class="p">],</span> \
-                  <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;food_supply_kcalcapitaday_2013&#39;</span> <span class="p">,</span> <span class="s1">&#39;protein_supply_gcapitaday_2013&#39;</span><span class="p">,</span> 
+       <span class="s1">&#39;pop_thousand_2013&#39;</span><span class="p">,</span> 
+       <span class="s1">&#39;protein_supply_kg&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_kg_2013&#39;</span><span class="p">,</span>
+       <span class="s1">&#39;protein_supply_animal_gcapitaday_2013&#39;</span><span class="p">,</span>
+       <span class="s1">&#39;protein_supply_animal_gcapitaday&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_animal_kg&#39;</span><span class="p">,</span>
+       <span class="s1">&#39;protein_supply_animal_kg_2013&#39;</span><span class="p">,</span> 
+       <span class="s1">&#39;protein_animal_over_protein_2013&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13933,7 +13734,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><h3>Poultry (with eggs) key data</h3><a id='poultry'></a></p>
+<p><h3>Poultry key data</h3><a id='poultry'></a></p>
 
 </div>
 </div>
@@ -13952,7 +13753,6 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <p>Poultry composition:</p>
 <ul>
 <li>Meat chicken, Fat liver prepared (foie gras), Meat chicken canned, Meat,duck, Meat goose and guinea fowl, Meat turkey.</li>
-<li>Eggs are included</li>
 </ul>
 
 </div>
@@ -13960,18 +13760,23 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Poultry Meat&#39;</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Eggs&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> \
-                                                            <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;production&#39;</span><span class="p">,</span> <span class="s1">&#39;import_quantity&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Poultry Meat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="p">[</span> <span class="s1">&#39;domestic_supply_quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;export_quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;import_quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;production&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_quantity_gcapitaday&#39;</span><span class="p">],</span> 
+                                                            <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
 
-<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;production_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;production_poultry_tons_2017&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_tons_2017&#39;</span><span class="p">]</span>
+<span class="n">temp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dom_supply_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;dom_supply_poultry_tons&#39;</span><span class="p">,</span> 
+                  <span class="s1">&#39;export_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;export_poultry_tons&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_tons&#39;</span><span class="p">,</span> 
+                 <span class="s1">&#39;prod_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;prod_poultry_tons&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;protein_poultry_gcapitaday_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_poultry_gcapitaday&#39;</span><span class="p">]</span>
 
 <span class="n">temp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1">#convert 1000 tons to tons</span>
-<span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">))]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
     <span class="n">temp</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">1000</span>
 
 <span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_country</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -13984,150 +13789,11 @@ Imputation with information collected from the International Monetary Fund (IMF)
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#growth Poultry imports</span>
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_growth&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> \
-             <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_tons_2017&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;production_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><h3>Chicken Importations (with eggs)</h3><a id='chicken'></a></p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Data are from the food and agricultural trade dataset collected, processed and disseminated by FAO. The data is mainly provided by UNSD, Eurostat, and other national authorities as needed.</p>
-<ul>
-<li>Import quantity of 'chicken' per country</li>
-<li>Import value of 'chicken' per country</li>
-</ul>
-<p>The category 'chicken' is made of 'chicken', 'meat, chicken', 'meat, chicken, canned', 'offals, liver chicken' + 'Eggs' were also included.
-<br>Offals liver chicken was not available in the 'Poultry' section on the previous section.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">chicken_trade</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;xx2&#39;</span><span class="p">,</span> <span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;partner_country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;partner_country&#39;</span><span class="p">,</span> <span class="s1">&#39;xx6&#39;</span><span class="p">,</span> \
-                        <span class="s1">&#39;element&#39;</span><span class="p">,</span> <span class="s1">&#39;xx8&#39;</span><span class="p">,</span> <span class="s1">&#39;xx9&#39;</span><span class="p">,</span> <span class="s1">&#39;xx10&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;xx13&#39;</span><span class="p">,</span> <span class="s1">&#39;xx14&#39;</span><span class="p">,</span> <span class="s1">&#39;xx15&#39;</span><span class="p">]</span>
-
-<span class="c1"># there is a disruptancy on the name of the UK between the FAO trade dataset and other FAO datasets</span>
-<span class="n">chicken_trade</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;United Kingdom&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;United Kingdom of Great Britain and Northern Ireland&#39;</span>
-<span class="n">chicken_trade</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;partner_country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;United Kingdom&#39;</span><span class="p">,</span> <span class="s1">&#39;partner_country&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;United Kingdom of Great Britain and Northern Ireland&#39;</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Imports of chicken per country - in quantity and value</span>
-
-<span class="n">chicken_import</span> <span class="o">=</span> <span class="n">chicken_trade</span><span class="o">.</span><span class="n">loc</span><span class="p">[((</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;element&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Import Value&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;element&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Import Quantity&#39;</span><span class="p">))</span> \
-                                  <span class="o">&amp;</span> <span class="p">(</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;1000 Head&#39;</span><span class="p">)]</span>
-
-<span class="n">chicken_import</span> <span class="o">=</span> <span class="n">chicken_import</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;element&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
-
-<span class="n">chicken_import</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_chicken_value_thousand_usd_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_chicken_quantity_tons_2017&#39;</span><span class="p">,</span> \
-                         <span class="s1">&#39;import_chicken_value_thousand_usd_2017&#39;</span><span class="p">]</span>
-<span class="n">chicken_import</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">data_country</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_country</span><span class="p">,</span> <span class="n">chicken_import</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">country_no_report_import_chicken</span> <span class="o">=</span> \
-    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2017&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">())</span> <span class="o">|</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2013&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">())]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>{{ len(country_no_report_import_chicken)}} countries do have missing information about chicken importations due to the absence of reports in 2013 or 2017:</p>
-<p>{{country_no_report_import_chicken.country.tolist()}}</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We will get an approximation of these imports through the declaration of exports from partner countries.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 <div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># getting information about the chicken imports on the countries not reporting the imports through the export reports from other countries.</span>
-
-<span class="n">chicken_export</span> <span class="o">=</span> <span class="n">chicken_trade</span><span class="o">.</span><span class="n">loc</span><span class="p">[((</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;element&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Export Quantity&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;element&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Export Value&#39;</span><span class="p">))</span> \
-                                  <span class="o">&amp;</span> <span class="p">(</span><span class="n">chicken_trade</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;1000 Head&#39;</span><span class="p">)]</span>
-
-<span class="c1"># Export of chicken to countries not reporting any chicken imports</span>
-<span class="n">chicken_export_to_countries_noreport</span> <span class="o">=</span> <span class="n">chicken_export</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">chicken_export</span><span class="p">[</span><span class="s1">&#39;partner_country&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">country_no_report_import_chicken</span><span class="o">.</span><span class="n">country</span><span class="p">)]</span>
-
-<span class="n">chicken_export_to_countries_noreport</span> <span class="o">=</span> <span class="n">chicken_export_to_countries_noreport</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>\
-                                                                                       <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;partner_country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;partner_country&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;element&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
-
-<span class="n">chicken_export_to_countries_noreport</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_chicken_value_thousand_usd_2013&#39;</span><span class="p">,</span> \
-                                                <span class="s1">&#39;import_chicken_quantity_tons_2017&#39;</span><span class="p">,</span> <span class="s1">&#39;import_chicken_value_thousand_usd_2017&#39;</span><span class="p">]</span>
-<span class="n">chicken_export_to_countries_noreport</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">chicken_export_to_countries_noreport</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;partner_country_code&#39;</span><span class="p">:</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;partner_country&#39;</span><span class="p">:</span><span class="s1">&#39;country&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;net_import_poultry_tons&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_tons&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;export_poultry_tons&#39;</span><span class="p">]</span>
+<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;net_import_poultry_tons_2013&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;export_poultry_tons_2013&#39;</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -14140,12 +13806,14 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">chicken_export_to_countries_noreport</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Poultry: Proportion of imports of in the domestic supply, Proportion of production in the domestic supply</span>
 
-<span class="c1">#overlapping values from chicken export to data_country for the countries not reporting their imports</span>
-<span class="n">data_country</span> <span class="o">=</span> <span class="n">data_country</span><span class="o">.</span><span class="n">combine_first</span><span class="p">(</span><span class="n">chicken_export_to_countries_noreport</span><span class="p">)</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;dom_supply_poultry_tons&#39;</span><span class="p">,</span><span class="s1">&#39;net_import_poultry_tons&#39;</span><span class="p">,</span> <span class="s1">&#39;net_import_poultry_over_domsupply&#39;</span><span class="p">),</span>
+              <span class="p">(</span><span class="s1">&#39;dom_supply_poultry_tons&#39;</span><span class="p">,</span><span class="s1">&#39;import_poultry_tons&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_over_domsupply&#39;</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">&#39;dom_supply_poultry_tons&#39;</span><span class="p">,</span><span class="s1">&#39;prod_poultry_tons&#39;</span><span class="p">,</span> <span class="s1">&#39;prod_poultry_over_domsupply&#39;</span><span class="p">)</span> <span class="p">]:</span>
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">),</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">!=</span><span class="mi">0</span><span class="p">),</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
 </pre></div>
 
     </div>
@@ -14158,11 +13826,14 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_growth_percent&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2017&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2013&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span><span class="mi">100</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Poultry:  growth production and growth import</span>
 
-<span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_ratio_usd_tons_2017&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_value_thousand_usd_2017&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="s1">&#39;import_chicken_quantity_tons_2017&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">,</span><span class="s1">&#39;import_poultry_tons&#39;</span><span class="p">,</span> <span class="s1">&#39;growth_import_poultry&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;dom_supply_poultry_tons_2013&#39;</span><span class="p">,</span><span class="s1">&#39;dom_supply_poultry_tons&#39;</span><span class="p">,</span> <span class="s1">&#39;growth_domsupply_poultry&#39;</span><span class="p">)]:</span>
+    
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">),</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">!=</span><span class="mi">0</span><span class="p">),</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">data_country</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_country</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">/</span> <span class="n">data_country</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
 </pre></div>
 
     </div>
@@ -14176,8 +13847,9 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
-<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;import_chicken_value_thousand_usd_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_chicken_quantity_tons_2013&#39;</span><span class="p">,</span>\
-                  <span class="s1">&#39;import_chicken_value_thousand_usd_2017&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;dom_supply_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;prod_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;export_poultry_tons_2013&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;net_import_poultry_tons_2013&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_poultry_gcapitaday_2013&#39;</span><span class="p">]</span>
+                  <span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14195,7 +13867,7 @@ Imputation with information collected from the International Monetary Fund (IMF)
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><h2>Imputing missing data</h2><a id='imputation'></a></p>
+<p><h2>Imputing missing data and verifying dataset</h2><a id='imputation'></a></p>
 
 </div>
 </div>
@@ -14256,21 +13928,28 @@ Imputation with information collected from the International Monetary Fund (IMF)
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>country                                   False
-country_code                              False
-food_supply_kcalcapitaday_2017            False
-gdp_percapita_usd_2017                    False
-import_chicken_quantity_tons_2017         False
-import_poultry_growth                     False
-import_poultry_tons_2017                  False
-political_stability_index                 False
-pop_2017_thousand                         False
-pop_growth_percent                        False
-prevalence_protein_animal_percent_2017    False
-production_poultry_tons_2017              False
-protein_supply_gcapitaday_2017            False
-import_chicken_quantity_growth_percent    False
-import_chicken_ratio_usd_tons_2017        False
+<pre>country_code                         False
+country                              False
+food_supply_kcalcapitaday            False
+protein_supply_gcapitaday            False
+pop_thousand                         False
+pop_growth                           False
+gdp_percapita_usd                    False
+gdp_growth                           False
+political_stability_index            False
+euro_union                           False
+protein_animal_over_protein          False
+dom_supply_poultry_tons              False
+export_poultry_tons                  False
+import_poultry_tons                  False
+prod_poultry_tons                    False
+protein_poultry_gcapitaday           False
+net_import_poultry_tons              False
+net_import_poultry_over_domsupply    False
+import_poultry_over_domsupply        False
+prod_poultry_over_domsupply          False
+growth_import_poultry                False
+growth_domsupply_poultry             False
 dtype: bool</pre>
 </div>
 
@@ -14283,14 +13962,7 @@ dtype: bool</pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<hr>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><h2>Exporting Dataset data_country</h2><a id='export'></a></p>
+<p><h2>Preparation datasets</h2><a id='prep'></a></p>
 
 </div>
 </div>
@@ -14300,54 +13972,59 @@ dtype: bool</pre>
 <div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">columns</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#remove column not needed for the analysis</span>
+<span class="n">data_country</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;country_code&#39;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[28]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>Index([&#39;country&#39;, &#39;country_code&#39;, &#39;food_supply_kcalcapitaday_2017&#39;,
-       &#39;gdp_percapita_usd_2017&#39;, &#39;import_chicken_quantity_tons_2017&#39;,
-       &#39;import_poultry_growth&#39;, &#39;import_poultry_tons_2017&#39;,
-       &#39;political_stability_index&#39;, &#39;pop_2017_thousand&#39;, &#39;pop_growth_percent&#39;,
-       &#39;prevalence_protein_animal_percent_2017&#39;,
-       &#39;production_poultry_tons_2017&#39;, &#39;protein_supply_gcapitaday_2017&#39;,
-       &#39;import_chicken_quantity_growth_percent&#39;,
-       &#39;import_chicken_ratio_usd_tons_2017&#39;],
-      dtype=&#39;object&#39;)</pre>
 </div>
-
-</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h3>Simplified dataset</h3><a id='simplified'></a></p>
 
 </div>
 </div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_country.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country_simplified</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[[</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;food_supply_kcalcapitaday&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_growth&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_gcapitaday&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;protein_animal_over_protein&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_thousand&#39;</span><span class="p">,</span> <span class="s1">&#39;euro_union&#39;</span><span class="p">]]</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h3>Complete dataset</h3><a id='simplified'></a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>data_country : complete dataset</p>
+<ul>
+<li>data_pca : data_country with only the variable required fo the PCA<ul>
+<li>data_pca_poultry : sub dataset of data_pca with only variables related to Poultry </li>
+<li>data_pca_not_poultry : sub dataset of data_pca with variables not related to Poultry</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -14391,112 +14068,148 @@ dtype: bool</pre>
     <tr style="text-align: right;">
       <th></th>
       <th>country</th>
-      <th>country_code</th>
-      <th>food_supply_kcalcapitaday_2017</th>
-      <th>gdp_percapita_usd_2017</th>
-      <th>import_chicken_quantity_tons_2017</th>
-      <th>import_poultry_growth</th>
-      <th>import_poultry_tons_2017</th>
+      <th>food_supply_kcalcapitaday</th>
+      <th>protein_supply_gcapitaday</th>
+      <th>pop_thousand</th>
+      <th>pop_growth</th>
+      <th>gdp_percapita_usd</th>
+      <th>gdp_growth</th>
       <th>political_stability_index</th>
-      <th>pop_2017_thousand</th>
-      <th>pop_growth_percent</th>
-      <th>prevalence_protein_animal_percent_2017</th>
-      <th>production_poultry_tons_2017</th>
-      <th>protein_supply_gcapitaday_2017</th>
-      <th>import_chicken_quantity_growth_percent</th>
-      <th>import_chicken_ratio_usd_tons_2017</th>
+      <th>euro_union</th>
+      <th>protein_animal_over_protein</th>
+      <th>...</th>
+      <th>export_poultry_tons</th>
+      <th>import_poultry_tons</th>
+      <th>prod_poultry_tons</th>
+      <th>protein_poultry_gcapitaday</th>
+      <th>net_import_poultry_tons</th>
+      <th>net_import_poultry_over_domsupply</th>
+      <th>import_poultry_over_domsupply</th>
+      <th>prod_poultry_over_domsupply</th>
+      <th>growth_import_poultry</th>
+      <th>growth_domsupply_poultry</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Afghanistan</td>
-      <td>2</td>
-      <td>1997.0</td>
-      <td>468.297893</td>
-      <td>70001.0</td>
-      <td>9.090909</td>
-      <td>48000.0</td>
-      <td>-2.78</td>
-      <td>36296.113</td>
-      <td>12.477767</td>
-      <td>19.523017</td>
-      <td>83000.0</td>
-      <td>54.09</td>
-      <td>64.086637</td>
-      <td>1234.310938</td>
+      <td>Armenia</td>
+      <td>3072.0</td>
+      <td>97.33</td>
+      <td>2944.791</td>
+      <td>1.629045</td>
+      <td>3078.978564</td>
+      <td>9.889928</td>
+      <td>-0.71</td>
+      <td>Outside EU</td>
+      <td>45.782390</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>35000.0</td>
+      <td>11000.0</td>
+      <td>5.44</td>
+      <td>35000.0</td>
+      <td>74.468085</td>
+      <td>74.468085</td>
+      <td>23.404255</td>
+      <td>9.375000</td>
+      <td>17.500000</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Albania</td>
-      <td>3</td>
-      <td>3400.0</td>
-      <td>3347.701760</td>
-      <td>40034.0</td>
-      <td>-1.538462</td>
-      <td>64000.0</td>
-      <td>0.40</td>
-      <td>2884.169</td>
-      <td>-0.675703</td>
-      <td>55.497908</td>
-      <td>38000.0</td>
-      <td>119.50</td>
-      <td>66.669442</td>
-      <td>1314.332817</td>
+      <td>Afghanistan</td>
+      <td>1997.0</td>
+      <td>54.09</td>
+      <td>36296.113</td>
+      <td>12.477767</td>
+      <td>468.297893</td>
+      <td>-5.206857</td>
+      <td>-2.78</td>
+      <td>Outside EU</td>
+      <td>19.523017</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>29000.0</td>
+      <td>28000.0</td>
+      <td>0.54</td>
+      <td>29000.0</td>
+      <td>50.877193</td>
+      <td>50.877193</td>
+      <td>49.122807</td>
+      <td>-39.583333</td>
+      <td>-24.000000</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>Algeria</td>
-      <td>4</td>
-      <td>3345.0</td>
-      <td>3264.338962</td>
-      <td>1991.0</td>
-      <td>4.724409</td>
-      <td>665000.0</td>
-      <td>-0.96</td>
-      <td>41389.189</td>
-      <td>8.518733</td>
-      <td>27.679052</td>
-      <td>2000.0</td>
-      <td>92.85</td>
-      <td>-26.774549</td>
-      <td>12734.304370</td>
+      <td>Albania</td>
+      <td>3400.0</td>
+      <td>119.50</td>
+      <td>2884.169</td>
+      <td>-0.675703</td>
+      <td>3347.701760</td>
+      <td>7.818559</td>
+      <td>0.40</td>
+      <td>Outside EU</td>
+      <td>55.497908</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>38000.0</td>
+      <td>13000.0</td>
+      <td>6.26</td>
+      <td>38000.0</td>
+      <td>80.851064</td>
+      <td>80.851064</td>
+      <td>27.659574</td>
+      <td>52.000000</td>
+      <td>11.904762</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>Angola</td>
-      <td>7</td>
-      <td>2266.0</td>
-      <td>2805.692595</td>
-      <td>267388.0</td>
-      <td>34.285714</td>
-      <td>47000.0</td>
-      <td>-0.29</td>
-      <td>29816.766</td>
-      <td>14.610305</td>
-      <td>30.449251</td>
-      <td>300000.0</td>
-      <td>54.09</td>
-      <td>-22.429454</td>
-      <td>1014.503269</td>
+      <td>Algeria</td>
+      <td>3345.0</td>
+      <td>92.85</td>
+      <td>41389.189</td>
+      <td>8.518733</td>
+      <td>3264.338962</td>
+      <td>-7.348644</td>
+      <td>-0.96</td>
+      <td>Outside EU</td>
+      <td>27.679052</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>2000.0</td>
+      <td>275000.0</td>
+      <td>1.97</td>
+      <td>2000.0</td>
+      <td>0.722022</td>
+      <td>0.722022</td>
+      <td>99.277978</td>
+      <td>-33.333333</td>
+      <td>-4.810997</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>Antigua and Barbuda</td>
-      <td>8</td>
-      <td>2429.0</td>
-      <td>10549.721325</td>
-      <td>6455.0</td>
-      <td>0.000000</td>
+      <td>Angola</td>
+      <td>2266.0</td>
+      <td>54.09</td>
+      <td>29816.766</td>
+      <td>14.610305</td>
+      <td>2805.692595</td>
+      <td>-15.509934</td>
+      <td>-0.29</td>
+      <td>Outside EU</td>
+      <td>30.449251</td>
+      <td>...</td>
       <td>0.0</td>
-      <td>0.76</td>
-      <td>95.426</td>
-      <td>4.272477</td>
-      <td>66.605052</td>
-      <td>7000.0</td>
-      <td>81.15</td>
-      <td>9.965928</td>
-      <td>1979.705655</td>
+      <td>277000.0</td>
+      <td>42000.0</td>
+      <td>3.60</td>
+      <td>277000.0</td>
+      <td>86.833856</td>
+      <td>86.833856</td>
+      <td>13.166144</td>
+      <td>-19.005848</td>
+      <td>-14.247312</td>
     </tr>
     <tr>
       <th>...</th>
@@ -14515,105 +14228,329 @@ dtype: bool</pre>
       <td>...</td>
       <td>...</td>
       <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
       <th>167</th>
-      <td>Venezuela (Bolivarian Republic of)</td>
-      <td>236</td>
-      <td>2247.0</td>
-      <td>6042.349852</td>
-      <td>25033.0</td>
-      <td>-32.088889</td>
-      <td>764000.0</td>
-      <td>-1.18</td>
-      <td>29402.484</td>
-      <td>-1.271131</td>
-      <td>45.115453</td>
-      <td>25000.0</td>
-      <td>56.30</td>
-      <td>-91.089620</td>
-      <td>2464.027484</td>
+      <td>Belgium</td>
+      <td>3770.0</td>
+      <td>101.35</td>
+      <td>11419.748</td>
+      <td>2.382453</td>
+      <td>32988.016625</td>
+      <td>0.652140</td>
+      <td>0.42</td>
+      <td>EU</td>
+      <td>57.109028</td>
+      <td>...</td>
+      <td>656000.0</td>
+      <td>338000.0</td>
+      <td>463000.0</td>
+      <td>4.57</td>
+      <td>-318000.0</td>
+      <td>-209.210526</td>
+      <td>222.368421</td>
+      <td>304.605263</td>
+      <td>34.126984</td>
+      <td>6.293706</td>
     </tr>
     <tr>
       <th>168</th>
-      <td>Viet Nam</td>
-      <td>237</td>
-      <td>2938.0</td>
-      <td>1619.296641</td>
-      <td>363681.0</td>
-      <td>43.422354</td>
-      <td>1450000.0</td>
-      <td>0.31</td>
-      <td>94600.648</td>
-      <td>4.240161</td>
-      <td>40.875264</td>
-      <td>295000.0</td>
-      <td>90.03</td>
-      <td>-30.725185</td>
-      <td>1082.748343</td>
+      <td>Luxembourg</td>
+      <td>3334.0</td>
+      <td>105.79</td>
+      <td>591.910</td>
+      <td>9.095768</td>
+      <td>81059.319125</td>
+      <td>3.178482</td>
+      <td>1.34</td>
+      <td>EU</td>
+      <td>63.692220</td>
+      <td>...</td>
+      <td>1000.0</td>
+      <td>11000.0</td>
+      <td>0.0</td>
+      <td>7.19</td>
+      <td>10000.0</td>
+      <td>90.909091</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>10.000000</td>
+      <td>0.000000</td>
     </tr>
     <tr>
       <th>169</th>
-      <td>Yemen</td>
-      <td>249</td>
-      <td>2062.0</td>
-      <td>515.814155</td>
-      <td>77952.0</td>
-      <td>6.363636</td>
-      <td>234000.0</td>
-      <td>-2.96</td>
-      <td>27834.819</td>
-      <td>10.687948</td>
-      <td>20.060105</td>
-      <td>78000.0</td>
-      <td>53.24</td>
-      <td>-28.257989</td>
-      <td>1554.674672</td>
+      <td>Serbia</td>
+      <td>2799.0</td>
+      <td>82.43</td>
+      <td>8829.628</td>
+      <td>-1.000975</td>
+      <td>4580.333116</td>
+      <td>6.113513</td>
+      <td>0.10</td>
+      <td>Outside EU</td>
+      <td>48.538154</td>
+      <td>...</td>
+      <td>7000.0</td>
+      <td>12000.0</td>
+      <td>85000.0</td>
+      <td>3.50</td>
+      <td>5000.0</td>
+      <td>5.555556</td>
+      <td>13.333333</td>
+      <td>94.444444</td>
+      <td>0.000000</td>
+      <td>-10.891089</td>
     </tr>
     <tr>
       <th>170</th>
-      <td>Zambia</td>
-      <td>251</td>
-      <td>2008.0</td>
-      <td>1115.460621</td>
-      <td>12070.0</td>
+      <td>Montenegro</td>
+      <td>3478.0</td>
+      <td>113.12</td>
+      <td>627.563</td>
+      <td>0.194462</td>
+      <td>5609.035115</td>
+      <td>11.469796</td>
+      <td>0.01</td>
+      <td>Outside EU</td>
+      <td>60.705446</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>8000.0</td>
+      <td>4000.0</td>
+      <td>5.79</td>
+      <td>8000.0</td>
+      <td>80.000000</td>
+      <td>80.000000</td>
+      <td>40.000000</td>
+      <td>14.285714</td>
       <td>0.000000</td>
-      <td>101000.0</td>
-      <td>0.11</td>
-      <td>16853.599</td>
-      <td>12.910256</td>
-      <td>19.776498</td>
-      <td>12000.0</td>
-      <td>59.06</td>
-      <td>669.279796</td>
-      <td>921.043911</td>
     </tr>
     <tr>
       <th>171</th>
-      <td>Zimbabwe</td>
-      <td>181</td>
-      <td>2167.0</td>
-      <td>882.887864</td>
-      <td>6600.0</td>
-      <td>4.255319</td>
-      <td>98000.0</td>
-      <td>-0.77</td>
-      <td>14236.595</td>
-      <td>6.638182</td>
-      <td>22.695313</td>
-      <td>7000.0</td>
-      <td>51.20</td>
-      <td>11.448835</td>
-      <td>1482.424242</td>
+      <td>Sudan</td>
+      <td>2431.0</td>
+      <td>67.88</td>
+      <td>40813.397</td>
+      <td>10.090612</td>
+      <td>1722.832006</td>
+      <td>30.959893</td>
+      <td>-2.01</td>
+      <td>Outside EU</td>
+      <td>31.143194</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>2000.0</td>
+      <td>67000.0</td>
+      <td>0.54</td>
+      <td>2000.0</td>
+      <td>2.898551</td>
+      <td>2.898551</td>
+      <td>97.101449</td>
+      <td>0.000000</td>
+      <td>43.750000</td>
     </tr>
   </tbody>
 </table>
-<p>172 rows × 15 columns</p>
+<p>172 rows × 21 columns</p>
 </div>
 </div>
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[31]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Index([&#39;country&#39;, &#39;food_supply_kcalcapitaday&#39;, &#39;protein_supply_gcapitaday&#39;,
+       &#39;pop_thousand&#39;, &#39;pop_growth&#39;, &#39;gdp_percapita_usd&#39;, &#39;gdp_growth&#39;,
+       &#39;political_stability_index&#39;, &#39;euro_union&#39;,
+       &#39;protein_animal_over_protein&#39;, &#39;dom_supply_poultry_tons&#39;,
+       &#39;export_poultry_tons&#39;, &#39;import_poultry_tons&#39;, &#39;prod_poultry_tons&#39;,
+       &#39;protein_poultry_gcapitaday&#39;, &#39;net_import_poultry_tons&#39;,
+       &#39;net_import_poultry_over_domsupply&#39;, &#39;import_poultry_over_domsupply&#39;,
+       &#39;prod_poultry_over_domsupply&#39;, &#39;growth_import_poultry&#39;,
+       &#39;growth_domsupply_poultry&#39;],
+      dtype=&#39;object&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># variables to be used on the PCA </span>
+<span class="n">data_pca</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[[</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_growth&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_percapita_usd&#39;</span><span class="p">,</span>  <span class="s1">&#39;political_stability_index&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;food_supply_kcalcapitaday&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_supply_gcapitaday&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;protein_animal_over_protein&#39;</span><span class="p">,</span>
+       <span class="s1">&#39;protein_poultry_gcapitaday&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;prod_poultry_over_domsupply&#39;</span><span class="p">,</span> <span class="s1">&#39;import_poultry_over_domsupply&#39;</span><span class="p">,</span> <span class="s1">&#39;net_import_poultry_over_domsupply&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;growth_import_poultry&#39;</span><span class="p">,</span> <span class="s1">&#39;growth_domsupply_poultry&#39;</span><span class="p">]]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># subset of data_pca with only data related to Poultry and Chicken </span>
+<span class="n">data_pca_poultry</span> <span class="o">=</span> <span class="n">data_country</span><span class="p">[[</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_poultry_gcapitaday&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;prod_poultry_over_domsupply&#39;</span><span class="p">,</span><span class="s1">&#39;growth_import_poultry&#39;</span><span class="p">,</span> <span class="s1">&#39;growth_domsupply_poultry&#39;</span><span class="p">,</span> <span class="s1">&#39;net_import_poultry_over_domsupply&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;import_poultry_over_domsupply&#39;</span><span class="p">]]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># subset of data_pca with data NOT related to Poultry and Chicken </span>
+<span class="n">data_pca_not_poultry</span> <span class="o">=</span> <span class="n">data_pca</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data_pca</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span> 
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data_pca_poultry</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="s1">&#39;country&#39;</span><span class="p">:</span>
+        <span class="n">data_pca_not_poultry</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h2>Exporting Dataset data_country</h2><a id='export'></a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Export simplified dataset</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country_simplified</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_country_simplified.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Export complete dataset</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_country</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_country.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_pca</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_pca.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_pca_poultry</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_pca_poultry.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_pca_not_poultry</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data/output/data_pca_not_poultry.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 

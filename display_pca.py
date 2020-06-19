@@ -28,11 +28,13 @@ def display_corr_matrix(corr):
 
 
 def display_circles(pcs, n_comp, pca, axis_ranks, labels=None, label_rotation=0, lims=None):
+    sns.set_style("dark")
     for d1, d2 in axis_ranks:
         if d2 < n_comp:
 
-            fig, ax = plt.subplots(figsize=(8, 8))
-            plt.title("Correlation Circle (F{} et F{})".format(d1 + 1, d2 + 1))
+
+            fig, ax = plt.subplots(figsize=(12, 12))
+            plt.title("Correlation Circle F{} et F{}".format(d1 + 1, d2 + 1))
 
             # limits
             if lims is not None:
@@ -139,39 +141,6 @@ def plot_dendrogram(Z, names, orientation='left'):
     return fig
 
 
-def display_factorial_planes(X_projected, n_comp, pca, axis_ranks, labels=None, alpha=1, illustrative_var=None,
-                             lims=None):
-    for d1, d2 in axis_ranks:
-        if d2 < n_comp:
-
-            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 20))
-
-            boundary = np.max(np.abs(X_projected[:, [d1, d2]])) * 1.1
-            ax1.set_xlim([-boundary, boundary])
-            ax1.set_ylim([-boundary, boundary])
-
-            if lims is None:
-                ax2.set_xlim([np.min(X_projected[:, [d1]]) * 1.1, np.max(X_projected[:, [d1]] * 1.2)])
-                ax2.set_ylim([np.min(X_projected[:, [d2]]) * 1.1, np.max(X_projected[:, [d2]] * 1.2)])
-            else:
-                xmin, xmax, ymin, ymax = lims
-                ax2.set_xlim(xmin, xmax)
-                ax2.set_ylim(ymin, ymax)
-
-            for axes in (ax1, ax2):
-                for i in range(len(X_projected)):
-                    axes.annotate(labels[i], (X_projected[i, d1], X_projected[i, d2]))
-
-                axes.plot([-20, 20], [0, 0], color='silver', linestyle='-', linewidth=1)
-                axes.plot([0, 0], [-20, 20], color='silver', linestyle='-', linewidth=1)
-
-                axes.set_xlabel('F{} ({}%)'.format(d1 + 1, round(100 * pca.explained_variance_ratio_[d1], 1)))
-                axes.set_ylabel('F{} ({}%)'.format(d2 + 1, round(100 * pca.explained_variance_ratio_[d2], 1)))
-
-                ax1.set_title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
-                ax2.set_title("- Zoom - Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
-
-
 def display_factorial_planes(X_projected, n_comp,
                              pca, axis_ranks, labels=None, alpha=1, illustrative_var=None, lims=None):
 
@@ -232,7 +201,7 @@ def display_factorial_planes(X_projected, n_comp,
             plt.ylabel('F{} ({}%)'.format(d2 + 1, round(100 * pca.explained_variance_ratio_[d2], 1)))
 
             plt.legend()
-            plt.title("Projection (on F{} and F{})".format(d1 + 1, d2 + 1))
+            plt.title("Projection on F{} and F{}".format(d1 + 1, d2 + 1))
 
             plt.show(block=False)
             return fig
