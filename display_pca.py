@@ -3,6 +3,8 @@ import matplotlib.collections as LineCollection
 import numpy as np
 import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram
+import scipy.stats as stats
+import pylab
 
 
 def display_corr_matrix(corr):
@@ -123,7 +125,7 @@ def display_broken_sticks_plot(pca, n):
     plt.show()
     return fig
 
-def plot_dendrogram(Z, names, orientation='left'):
+def plot_dendrogram(Z, names, orientation='left', display=None):
 
     if orientation in ['left', 'right']:
         fig = plt.figure(figsize=(10,25))
@@ -137,8 +139,12 @@ def plot_dendrogram(Z, names, orientation='left'):
         labels = names,
         orientation = orientation,
     )
-    plt.show()
-    return fig
+
+    if display is None:
+        plt.show(fig)
+
+    else:
+        return fig
 
 
 def display_factorial_planes(X_projected, n_comp,
@@ -237,4 +243,29 @@ def display_multiple_boxplot(X, shape_given):
                     ax[i].set_facecolor('whitesmoke')
                     ax[i].grid(True, c='white')
                     i += 1
+        return fig
+
+def display_multiple_henrylines(data, variables, shape_given):
+    # display henri lines for each variables
+    # data = dataframe
+    # variables = column names of 'data' that needs to be displayed
+    for row, col in shape_given:
+        (i, j) = (0, 0)
+        fig, ax = plt.subplots(row, col, figsize=((3.5 * col), (5 * row)))
+
+        for k in range(len(variables)):
+            if row > 1 and col > 1:
+                if j < row:
+                    stats.probplot(data[variables[k]], dist="norm", plot=ax[j][i])
+                    ax[j][i].set_title('{}'.format(variables[k]))
+                    i += 1
+                    if i == col:
+                        (i, j) = (0, j + 1)
+
+                else:
+                    if i < max(row, col):
+                        stats.probplot(data[variables[k]], dist="norm", plot=ax[i])
+                        ax[i].set_title('{}'.format(variables[k]))
+                        i += 1
+        pylab.show()
         return fig
